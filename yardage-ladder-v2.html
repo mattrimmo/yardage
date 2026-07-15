@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Yardage Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --bg:#F8F8F6;
+  --white:#FFFFFF;
+  --ink:#111111;
+  --ink-mid:#444444;
+  --ink-light:#999999;
+  --rule:#E4E4E0;
+  --rule-dark:#C8C8C4;
+  --navy:#1A2B4A;
+  --red:#CC2B2B;
+  --red-pale:rgba(204,43,43,0.06);
+  --green:#1A6B3C;
+  --green-pale:rgba(26,107,60,0.08);
+  --amber:#96540A;
+  --amber-pale:rgba(150,84,10,0.07);
+  --blue:#1A3F7A;
+}
+html { background:var(--bg); }
+body { background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; font-size:13px; min-height:100vh; padding-bottom:40px; }
+
+/* HEADER */
+.header { background:var(--white); padding:0 0 0 0; border-bottom:1px solid var(--rule); }
+.header-top { padding:20px 18px 14px; }
+.eyebrow { font-size:8px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:var(--ink-light); margin-bottom:5px; }
+.h-title { font-family:'Bebas Neue',sans-serif; font-size:38px; letter-spacing:0.06em; color:var(--ink); line-height:1; margin-bottom:2px; }
+.h-subtitle { font-size:10px; color:var(--ink-light); letter-spacing:0.06em; font-weight:500; }
+.triple-track { display:flex; flex-direction:column; gap:2.5px; padding:10px 0; }
+.track { height:2px; background:var(--navy); }
+.track:nth-child(1) { background:var(--red); }
+.track:nth-child(2) { background:var(--navy); }
+.track:nth-child(3) { background:var(--red); }
+.h-stats { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--rule); }
+.hst { padding:10px 0; text-align:center; border-right:1px solid var(--rule); }
+.hst:last-child { border-right:none; }
+.hst-val { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:0.04em; line-height:1; color:var(--navy); }
+.hst-label { font-size:8px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-light); margin-top:2px; }
+
+/* SCALE */
+.scale-hdr { display:flex; align-items:center; padding:8px 18px 6px; background:var(--white); border-bottom:1px solid var(--rule); }
+.scale-lbl { font-size:8px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-light); width:108px; flex-shrink:0; }
+.scale-ticks { flex:1; display:flex; position:relative; height:16px; margin-right:58px; }
+.stk { position:absolute; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:2px; }
+.stk-line { width:1px; height:4px; background:var(--rule-dark); }
+.stk-num { font-family:'Bebas Neue',sans-serif; font-size:9px; letter-spacing:0.04em; color:var(--ink-light); }
+
+/* SECTION LABEL */
+.sec-label { padding:7px 18px 5px; font-size:8px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-light); background:var(--bg); border-bottom:1px solid var(--rule); }
+
+/* CLUB ROW */
+.crow { display:flex; align-items:center; min-height:54px; border-bottom:1px solid var(--rule); cursor:pointer; background:var(--white); transition:background 0.1s; position:relative; }
+.crow.active { background:#F2F7FF; }
+.crow::after { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:transparent; transition:background 0.15s; }
+.crow.active::after { background:var(--navy); }
+
+.clbl { width:108px; flex-shrink:0; padding:10px 0 10px 18px; }
+.cname { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:0.04em; color:var(--ink); line-height:1; display:flex; align-items:center; gap:5px; }
+.crow.active .cname { color:var(--navy); }
+.cname-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+.csub { font-size:9px; font-weight:500; color:var(--ink-light); margin-top:2px; }
+
+.cbar { flex:1; position:relative; height:54px; margin-right:58px; }
+.cbar-inner { position:absolute; left:0; right:0; top:0; bottom:0; }
+.brange { position:absolute; top:18px; bottom:18px; border-radius:2px; }
+.bavg-line { position:absolute; top:12px; bottom:12px; width:2px; border-radius:1px; }
+.bdot { position:absolute; top:50%; transform:translate(-50%,-50%); width:9px; height:9px; border-radius:50%; border:2px solid var(--white); box-shadow:0 0 0 1px rgba(0,0,0,0.1); }
+.crow.active .bdot { border-color:#F2F7FF; }
+.bmin { position:absolute; top:4px; font-family:'Bebas Neue',sans-serif; font-size:8px; color:var(--ink-light); transform:translateX(-50%); letter-spacing:0.04em; }
+.bmax { position:absolute; top:4px; font-family:'Bebas Neue',sans-serif; font-size:8px; color:var(--ink-light); transform:translateX(-50%); letter-spacing:0.04em; }
+
+.cnums { width:58px; padding:8px 18px 8px 0; text-align:right; flex-shrink:0; }
+.cavg { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:0.01em; line-height:1; color:var(--ink); }
+.crow.active .cavg { color:var(--navy); }
+.cyds { font-size:8px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-light); }
+
+/* EXPAND */
+.exp { display:none; border-bottom:1px solid var(--rule); background:var(--white); }
+.crow.active + .exp { display:block; }
+.exp-inner { margin-left:3px; padding:12px 18px 14px; border-left:3px solid var(--navy); }
+.exp-shot { font-size:12px; font-weight:600; color:var(--navy); margin-bottom:4px; letter-spacing:0.01em; }
+.exp-note { font-size:11px; color:var(--ink-mid); line-height:1.65; }
+.exp-note strong { color:var(--ink); font-weight:600; }
+.exp-range { display:inline-block; margin-top:7px; font-size:10px; font-weight:600; color:var(--ink-light); background:var(--bg); border:1px solid var(--rule); border-radius:3px; padding:3px 8px; letter-spacing:0.04em; }
+
+/* TIPS */
+.tips-wrap { padding:16px 18px 0; }
+.tips-hdr { font-size:8px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-light); margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--rule); }
+.tip { display:flex; gap:10px; padding:8px 0; border-bottom:1px solid var(--rule); align-items:flex-start; }
+.tip:last-child { border-bottom:none; }
+.tip-ico { font-size:12px; flex-shrink:0; margin-top:1px; width:18px; }
+.tip-txt { font-size:11px; color:var(--ink-mid); line-height:1.55; }
+.tip-txt strong { color:var(--ink); font-weight:600; }
+
+.footer { text-align:center; padding:16px 18px; font-size:8px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-light); border-top:1px solid var(--rule); margin-top:14px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="eyebrow">Matt · Yardage Reference</div>
+    <div class="h-title">YARDAGE CARD</div>
+    <div class="h-subtitle">Real course carries · S3–S6 data · Jul 2026</div>
+  </div>
+  <div class="triple-track">
+    <div class="track"></div>
+    <div class="track"></div>
+    <div class="track"></div>
+  </div>
+  <div class="h-stats">
+    <div class="hst"><div class="hst-val">234</div><div class="hst-label">Driver peak</div></div>
+    <div class="hst"><div class="hst-val">+12.5%</div><div class="hst-label">Applied</div></div>
+    <div class="hst"><div class="hst-val">141</div><div class="hst-label">Trusted 9i</div></div>
+  </div>
+</div>
+
+<div class="scale-hdr">
+  <div class="scale-lbl">CLUB</div>
+  <div class="scale-ticks" id="sticks"></div>
+</div>
+
+<div id="ladder"></div>
+
+<div class="tips-wrap">
+  <div class="tips-hdr">Course Reminders</div>
+  <div class="tip"><div class="tip-ico">🏌️</div><div class="tip-txt"><strong>Off the tee:</strong> Open hole → driver. Tight hole → 4 hybrid or 5 iron.</div></div>
+  <div class="tip"><div class="tip-ico">🎯</div><div class="tip-txt"><strong>Most trusted clubs:</strong> 9 iron and 8 iron. Use these whenever you're in range.</div></div>
+  <div class="tip"><div class="tip-ico">⚠️</div><div class="tip-txt"><strong>110–141 yds:</strong> Gap in the bag. Lay up to 141 yds where possible. Three-quarter 7 or easy 8 otherwise.</div></div>
+  <div class="tip"><div class="tip-ico">✅</div><div class="tip-txt"><strong>Every shot:</strong> 2.5 knuckles. Check it before every tee shot and approach.</div></div>
+  <div class="tip"><div class="tip-ico">⛳</div><div class="tip-txt"><strong>Putting:</strong> Outside 3m — two putts is a great result. Lag close first.</div></div>
+</div>
+
+<div class="footer">S3–S6 · Jun 29 – Jul 11 2026 · All yardages real course estimates (range +12.5%)</div>
+
+<script>
+var MN=85, MX=270;
+function pc(y){ return Math.max(0,Math.min(100,(y-MN)/(MX-MN)*100)); }
+
+var clubs=[
+  {
+    name:'DRIVER', avg:220, min:180, max:268,
+    col:'#1A2B4A', dotCol:'#1A2B4A',
+    snap:'Open tee shots',
+    shotTitle:'Off the tee — open holes',
+    note:'Your power club. <strong>Good strikes average 234 yds, 16 yds offline</strong> — nearly half your drives in S6 were good strikes. Tee half the ball above the crown. Aim slightly right of centre and let the draw come back. Use on any hole where the miss has room.',
+    range:'180–268 yds'
+  },
+  {
+    name:'3 WOOD', avg:213, min:171, max:252,
+    col:'#CC2B2B', dotCol:'#CC2B2B',
+    snap:'Range only for now',
+    shotTitle:'Off the tee — tight holes (range only for now)',
+    note:'<strong>Not reliable on the course yet.</strong> Overclosing severely left in recent sessions. At the range: off the mat only, 65% effort, 2 knuckles grip, hold the face through impact. Come back to this once it\'s fixed.',
+    range:'171–252 yds'
+  },
+  {
+    name:'4 HYBRID', avg:181, min:135, max:205,
+    col:'#1A3F7A', dotCol:'#1A3F7A',
+    snap:'Long approach / tight tee',
+    shotTitle:'Long approach or tight tee shot',
+    note:'Your best option when you need 160–190 yds and the driver feels risky. <strong>Clean strikes go 181 yds, 17 yds offline.</strong> Hold the face through impact — same feeling that fixed the 9 iron. 65% effort, choke down half an inch.',
+    range:'135–205 yds'
+  },
+  {
+    name:'5 IRON', avg:175, min:127, max:195,
+    col:'#1A6B3C', dotCol:'#1A6B3C',
+    snap:'Long approach / layup',
+    shotTitle:'Long approach or layup from 160–180 yds',
+    note:'Good when you need to keep the ball low and run it up. Same swing pattern as the 7 iron — elbow tuck, right shoulder through. One solid session in S5 (FTP 0.55°). Limited data — plan for 165 yds on course.',
+    range:'127–195 yds'
+  },
+  {
+    name:'6 IRON', avg:166, min:148, max:200,
+    col:'#1A6B3C', dotCol:'#1A6B3C',
+    snap:'Mid-long approach',
+    shotTitle:'Mid-long approach from 155–175 yds',
+    note:'Good for reaching par 4s in two or laying up to a comfortable wedge distance on par 5s. Watch for the left miss — face can overclose. Only 16 balls of data so treat carries conservatively.',
+    range:'148–200 yds'
+  },
+  {
+    name:'7 IRON', avg:140, min:123, max:184,
+    col:'#1A6B3C', dotCol:'#1A6B3C',
+    snap:'Mid approach / layup',
+    shotTitle:'Mid approach from 130–155 yds',
+    note:'88 balls of data — your most practised club. <strong>Plan for 140 yds on course</strong> (data avg is 156 but face has drifted open in recent sessions). Great for laying up short of trouble or attacking from 140 yds.',
+    range:'123–184 yds'
+  },
+  {
+    name:'8 IRON', avg:148, min:129, max:172,
+    col:'#1A6B3C', dotCol:'#1A6B3C',
+    snap:'Accurate approach',
+    shotTitle:'Accurate approach from 130–160 yds',
+    note:'<strong>One of your two most trusted clubs.</strong> FTP -1.74°, near-perfect face control. 27 balls of reliable S4 data. Use this when you need a straight, controlled approach shot and you\'re anywhere in this range.',
+    range:'129–172 yds'
+  },
+  {
+    name:'9 IRON', avg:141, min:107, max:168,
+    col:'#1A6B3C', dotCol:'#1A6B3C',
+    snap:'Go-to scoring iron',
+    shotTitle:'Approach from 125–155 yds — most trusted',
+    note:'<strong>Your most reliable iron. FTP -0.13° — virtually dead straight.</strong> 55 balls of data. The club to reach for whenever you\'re in range. On the course target this distance from the fairway whenever you can.',
+    range:'107–168 yds'
+  },
+  {
+    name:'PW', avg:110, min:62, max:150,
+    col:'#96540A', dotCol:'#96540A',
+    snap:'Short approach',
+    shotTitle:'Short approach or layup from 95–120 yds',
+    note:'Good for punch-in shots from under 120 yds. Wide carry range (62–150) means commit to a smooth full swing rather than trying to steer it. <strong>Note: 31 yd gap to the 9 iron at 141 yds</strong> — avoid leaving yourself in the 110–141 yd window if you can.',
+    range:'62–150 yds'
+  },
+  {
+    name:'SW', avg:101, min:89, max:117,
+    col:'#96540A', dotCol:'#96540A',
+    snap:'Greenside & bunkers',
+    shotTitle:'Short approach or greenside from 90–110 yds',
+    note:'Your go-to inside 110 yds. Also use for greenside bunkers and short pitch shots around the green. Limited data (7 balls) so treat 101 yds as approximate. Gap between SW and PW is only 9 yds — they almost overlap right now.',
+    range:'89–117 yds'
+  },
+];
+
+var active=null;
+
+function buildTicks(){
+  var w=document.getElementById('sticks');
+  var tks=[100,120,140,160,180,200,220,240,260];
+  var h='';
+  tks.forEach(function(y){
+    var p=pc(y);
+    h+='<div class="stk" style="left:'+p+'%"><div class="stk-line"></div><div class="stk-num">'+y+'</div></div>';
+  });
+  w.innerHTML=h;
+}
+
+function buildLadder(){
+  var ld=document.getElementById('ladder');
+  var h='';
+  var sections=[
+    {label:'LONG GAME', clubs:[0,1,2,3]},
+    {label:'IRONS', clubs:[4,5,6,7]},
+    {label:'WEDGES', clubs:[8,9]},
+  ];
+
+  sections.forEach(function(sec){
+    h+='<div class="sec-label">'+sec.label+'</div>';
+    sec.clubs.forEach(function(ci){
+      var c=clubs[ci];
+      var mnP=pc(c.min), mxP=pc(c.max), avP=pc(c.avg);
+      var opacity = c.name==='3 WOOD' ? 0.25 : 0.18;
+
+      h+='<div class="crow" id="cr'+ci+'" onclick="tog('+ci+')">';
+      h+='<div class="clbl">';
+      h+='<div class="cname"><span class="cname-dot" style="background:'+c.dotCol+'"></span>'+c.name+'</div>';
+      h+='<div class="csub">'+c.snap+'</div>';
+      h+='</div>';
+      h+='<div class="cbar"><div class="cbar-inner">';
+      h+='<div class="brange" style="left:'+mnP+'%;right:'+(100-mxP)+'%;background:'+c.col+';opacity:'+opacity+';"></div>';
+      h+='<div class="bavg-line" style="left:calc('+avP+'% - 1px);background:'+c.col+';opacity:0.5;"></div>';
+      h+='<div class="bdot" style="left:'+avP+'%;background:'+c.col+';"></div>';
+      h+='<div class="bmin" style="left:'+mnP+'%">'+c.min+'</div>';
+      h+='<div class="bmax" style="left:'+mxP+'%">'+c.max+'</div>';
+      h+='</div></div>';
+      h+='<div class="cnums"><div class="cavg">'+c.avg+'</div><div class="cyds">YDS</div></div>';
+      h+='</div>';
+
+      h+='<div class="exp" id="ep'+ci+'">';
+      h+='<div class="exp-inner">';
+      h+='<div class="exp-shot">'+c.shotTitle+'</div>';
+      h+='<div class="exp-note">'+c.note+'</div>';
+      h+='<div class="exp-range">Range: '+c.range+'</div>';
+      h+='</div></div>';
+    });
+  });
+
+  ld.innerHTML=h;
+}
+
+function tog(i){
+  var r=document.getElementById('cr'+i);
+  if(active===i){ r.classList.remove('active'); active=null; }
+  else{
+    if(active!==null){ var p=document.getElementById('cr'+active); if(p) p.classList.remove('active'); }
+    r.classList.add('active'); active=i;
+    setTimeout(function(){ r.scrollIntoView({behavior:'smooth',block:'nearest'}); },60);
+  }
+}
+
+buildTicks();
+buildLadder();
+</script>
+</body>
+</html>
